@@ -4,7 +4,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 position_test() ->
-  {ok, Cell} = cell:go([position]),
+  {ok, Cell} = cell:go("Ship"),
   s:s(Cell, {delta_v, [2, 5]}),
   s:s(Cell, {tick, 0}),
   [[{2, 2}, {5, 5}]] = s:s(Cell, info),
@@ -24,9 +24,10 @@ handle_call(terminate, _From, State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}. 
 
-go(Modules) ->
+go(TypeName) ->
+  Modules = compositions:compositions(TypeName),
   gen_server:start_link(?MODULE, Modules, []).
-
+  
 handle_cast(_, State) ->
   {noreply, State}.
 handle_info(Msg, State) ->
