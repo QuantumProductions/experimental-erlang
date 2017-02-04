@@ -12,6 +12,10 @@ position_test() ->
   s:s(Cell, {tick, 0}),
   [[{3, 1}, {8, 3}]] = s:s(Cell, info).
 
+default_position_test() ->
+  {ok, Cell} = cell:go("Ship", #{position => [{20,0}, {50,0}]}),
+  [[{0, 0}, {0, 0}]] = s:s(Cell, info).
+
 handle_call(info, _, State) ->
   Info = lists:map(fun(P) -> s:s(P, info) end, State),
   {reply, Info, State};
@@ -24,9 +28,11 @@ handle_call(terminate, _From, State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}. 
 
-go(TypeName) ->
+go (TypeName) ->
+  go(TypeName, #{}).
+go(TypeName, Defaults) ->
   Modules = compositions:compositions(TypeName),
-  gen_server:start_link(?MODULE, Modules, []).
+  gen_server:start_link(?MODULE, {Modules, Defaults}, []).
   
 handle_cast(_, State) ->
   {noreply, State}.
@@ -38,7 +44,12 @@ terminate(normal, State) ->
     io:format("Status.~p~n", [State]),
     ok.
 
-init(Modules) -> 
-  Started = lists:map(fun(M) -> M:go() end, Modules),
+init({Modules, Defaults}) -> 
+  Started = lists:map(fun(M) -> 
+    case maps:is_key(M, Defaults) of
+      true ->  M:go(maps:get(M, Defaults));
+      false -> M:go()
+    end
+  end, Modules),
   Pids = lists:foldl(fun({ok, Pid}, StartingPids) -> lists:append(StartingPids, [Pid]) end, [], Started),
   {ok, Pids}.

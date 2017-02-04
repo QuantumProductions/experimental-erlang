@@ -32,7 +32,9 @@ code_change(_OldVsn, State, _Extra) ->
     {ok, State}. 
 
 go() ->
-  gen_server:start_link(?MODULE, [], []).
+  go([]).
+go(Arguments) ->
+  gen_server:start_link(?MODULE, Arguments, []).
 
 handle_cast(_, State) ->
   {noreply, State}.
@@ -45,4 +47,6 @@ terminate(normal, State) ->
     ok.
 
 init([]) -> 
-  {ok, [{0, 0}, {0, 0}]}.
+  {ok, [{0, 0}, {0, 0}]};
+init(Defaults) ->
+  {ok, Defaults}.
