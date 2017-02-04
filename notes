@@ -1,0 +1,9 @@
+Grand Dispatcher
+
+maps controller => specific Pids (maybe a controller module, maybe 4 mappers each running an ID check)
+---------
+What happens when running
+engine > ship > delta_v on ship?
+
+accumulate the {Message, Contents} on a list for the cell, and update on tick?
+What is returned (Does it matter?)?
