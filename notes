@@ -1,3 +1,6 @@
+Entities should send intents to world
+world should move as possible, getting collision info from entities and passing to move + collider evaluator
+
 Grand Dispatcher
 
 maps controller => specific Pids (maybe a controller module, maybe 4 mappers each running an ID check)
